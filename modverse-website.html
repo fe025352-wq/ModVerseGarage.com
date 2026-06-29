@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MODVERSE | Ultimate Car Modification Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Bebas+Neue&family=Orbitron:wght@400;500;700;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#070707;
+    --bg-soft:#0d0d0d;
+    --panel:#121212;
+    --panel-2:#1a1a1a;
+    --line:#262626;
+    --red:#ff003c;
+    --red-dim:#7a0020;
+    --chrome:#cfd2d6;
+    --white:#f5f5f5;
+    --muted:#8a8a8a;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--white);
+    font-family:'Inter',sans-serif;
+    overflow-x:hidden;
+  }
+  *{scrollbar-width:thin; scrollbar-color:var(--red) var(--bg-soft);}
+  *::-webkit-scrollbar{width:6px;}
+  *::-webkit-scrollbar-track{background:var(--bg-soft);}
+  *::-webkit-scrollbar-thumb{background-color:var(--red); border-radius:20px;}
+
+  h1,h2,h3,.display{font-family:'Orbitron',sans-serif; letter-spacing:0.5px;}
+  .accent-font{font-family:'Audiowide',sans-serif;}
+
+  a{color:inherit; text-decoration:none;}
+
+  /* ---------- Reduced motion ---------- */
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001s !important; transition-duration:0.001s !important;}
+  }
+
+  :focus-visible{
+    outline:2px solid var(--red);
+    outline-offset:3px;
+  }
+
+  /* ---------- Editable hint ---------- */
+  [contenteditable="true"]{
+    cursor:text;
+    border-radius:4px;
+    transition:background .2s, box-shadow .2s;
+  }
+  [contenteditable="true"]:hover{
+    background:rgba(255,0,60,0.07);
+    box-shadow:0 0 0 1px rgba(255,0,60,0.25);
+  }
+  [contenteditable="true"]:focus{
+    background:rgba(255,0,60,0.1);
+    box-shadow:0 0 0 1px var(--red);
+    outline:none;
+  }
+  .edit-zone{position:relative;}
+  .edit-pen{
+    position:absolute; top:-10px; right:-10px;
+    width:22px; height:22px; border-radius:50%;
+    background:var(--red); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:11px; opacity:0; pointer-events:none;
+    transition:opacity .2s;
+  }
+  .edit-zone:hover .edit-pen{opacity:1;}
+  .photo-swap{
+    position:relative; overflow:hidden; cursor:pointer;
+  }
+  .photo-swap input[type=file]{
+    position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%;
+  }
+  .photo-swap .swap-label{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(0,0,0,0.55);
+    color:#fff; font-family:'Orbitron',sans-serif; font-size:11px;
+    letter-spacing:1.5px; text-transform:uppercase;
+    opacity:0; transition:opacity .25s;
+    pointer-events:none;
+  }
+  .photo-swap:hover .swap-label{opacity:1;}
+
+  /* ---------- Top bar / edit mode toggle ---------- */
+  .editbar{
+    position:fixed; top:0; left:0; right:0; z-index:999;
+    display:flex; align-items:center; justify-content:center; gap:14px;
+    background:linear-gradient(90deg, #1a0008, #2b000d, #1a0008);
+    border-bottom:1px solid var(--red-dim);
+    padding:8px 16px;
+    font-size:12px;
+    color:var(--chrome);
+    letter-spacing:0.5px;
+  }
+  .editbar strong{color:var(--red);}
+  .editbar button{
+    background:var(--red); color:#fff; border:none;
+    padding:6px 14px; border-radius:20px; font-size:11px;
+    font-family:'Orbitron',sans-serif; letter-spacing:1px;
+    cursor:pointer; text-transform:uppercase;
+  }
+  .editbar button.secondary{background:transparent; border:1px solid var(--chrome); color:var(--chrome);}
+
+  /* ---------- Nav ---------- */
+  nav{
+    position:fixed; top:34px; left:0; right:0; z-index:900;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 5vw;
+    transition:background .3s, padding .3s, top .3s;
+  }
+  nav.scrolled{
+    background:rgba(7,7,7,0.85);
+    backdrop-filter:blur(10px);
+    padding:12px 5vw;
+    border-bottom:1px solid var(--line);
+  }
+  .logo{
+    font-family:'Audiowide',sans-serif;
+    font-size:1.4rem;
+    letter-spacing:2px;
+  }
+  .logo span{color:var(--red);}
+  .nav-links{display:flex; gap:34px; font-size:0.85rem; letter-spacing:1px;}
+  .nav-links a{
+    position:relative; padding-bottom:4px; color:var(--chrome);
+    transition:color .25s;
+  }
+  .nav-links a::after{
+    content:''; position:absolute; left:0; bottom:0; width:0; height:2px;
+    background:var(--red); transition:width .25s;
+  }
+  .nav-links a:hover{color:#fff;}
+  .nav-links a:hover::after{width:100%;}
+  .nav-cta{
+    background:var(--red); color:#fff; padding:10px 22px;
+    border-radius:30px; font-size:0.8rem; font-weight:700;
+    letter-spacing:1px; font-family:'Orbitron',sans-serif;
+    box-shadow:0 0 20px rgba(255,0,60,0.35);
+    transition:transform .25s, box-shadow .25s;
+  }
+  .nav-cta:hover{transform:translateY(-2px); box-shadow:0 6px 26px rgba(255,0,60,0.55);}
+  .burger{display:none; flex-direction:column; gap:5px; cursor:pointer; z-index:950;}
+  .burger span{width:26px; height:2px; background:#fff;}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex; align-items:center;
+    padding:140px 5vw 60px;
+    overflow:hidden;
+  }
+  .hero-bg-grid{
+    position:absolute; inset:0; z-index:0;
+    background-image:
+      linear-gradient(rgba(255,0,60,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,0,60,0.06) 1px, transparent 1px);
+    background-size:48px 48px;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 40%, black 40%, transparent 100%);
+    animation:gridMove 18s linear infinite;
+  }
+  @keyframes gridMove{
+    from{background-position:0 0;}
+    to{background-position:48px 96px;}
+  }
+  .hero-glow{
+    position:absolute; top:10%; left:50%; transform:translateX(-50%);
+    width:900px; height:900px; border-radius:50%;
+    background:radial-gradient(circle, rgba(255,0,60,0.18), transparent 65%);
+    z-index:0; pointer-events:none;
+  }
+  .hero-inner{
+    position:relative; z-index:2;
+    display:grid; grid-template-columns:1.05fr 1fr; gap:40px;
+    width:100%; align-items:center;
+  }
+  .hero-eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    color:var(--red); font-size:0.78rem; letter-spacing:3px;
+    font-family:'Orbitron',sans-serif; margin-bottom:18px;
+    opacity:0; transform:translateY(14px);
+    animation:revealUp .7s .15s forwards;
+  }
+  .hero-eyebrow::before{
+    content:''; width:8px; height:8px; background:var(--red); border-radius:50%;
+    box-shadow:0 0 12px var(--red);
+    animation:pulse 1.6s infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:0.3;}}
+  .hero h1{
+    font-size:clamp(2.6rem, 5.6vw, 4.6rem);
+    line-height:1.04; margin:0 0 22px;
+    opacity:0; transform:translateY(20px);
+    animation:revealUp .8s .3s forwards;
+  }
+  .hero h1 em{
+    font-style:normal; color:var(--red);
+    text-shadow:0 0 30px rgba(255,0,60,0.5);
+  }
+  .hero p.lead{
+    color:var(--muted); font-size:1.05rem; max-width:480px; line-height:1.7;
+    margin-bottom:34px;
+    opacity:0; transform:translateY(20px);
+    animation:revealUp .8s .45s forwards;
+  }
+  .hero-ctas{
+    display:flex; gap:16px; flex-wrap:wrap;
+    opacity:0; transform:translateY(20px);
+    animation:revealUp .8s .6s forwards;
+  }
+  .btn-primary{
+    background:var(--red); color:#fff; padding:16px 32px; border-radius:6px;
+    font-family:'Orbitron',sans-serif; font-weight:700; font-size:0.85rem;
+    letter-spacing:1.5px; display:inline-flex; align-items:center; gap:10px;
+    border:none; cursor:pointer;
+    transition:transform .25s, box-shadow .25s, background .25s;
+    box-shadow:0 0 0 rgba(255,0,60,0.0);
+  }
+  .btn-primary:hover{transform:translateY(-3px); box-shadow:0 10px 30px rgba(255,0,60,0.45);}
+  .btn-ghost{
+    border:1px solid var(--line); color:#fff; padding:16px 28px; border-radius:6px;
+    font-family:'Orbitron',sans-serif; font-weight:700; font-size:0.85rem;
+    letter-spacing:1.5px; background:transparent; cursor:pointer;
+    transition:border-color .25s, background .25s;
+  }
+  .btn-ghost:hover{border-color:var(--red); background:rgba(255,0,60,0.06);}
+
+  .hero-stats{
+    display:flex; gap:34px; margin-top:48px;
+    opacity:0; transform:translateY(20px);
+    animation:revealUp .8s .75s forwards;
+  }
+  .stat b{display:block; font-family:'Orbitron',sans-serif; font-size:1.7rem; color:#fff;}
+  .stat span{font-size:0.74rem; color:var(--muted); letter-spacing:1px; text-transform:uppercase;}
+
+  @keyframes revealUp{to{opacity:1; transform:translateY(0);}}
+
+  /* ---------- 3D canvas hero ---------- */
+  .hero-3d-wrap{
+    position:relative; height:560px;
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; animation:fadeIn 1.1s .5s forwards;
+  }
+  @keyframes fadeIn{to{opacity:1;}}
+  #car3d{
+    width:100%; height:100%; cursor:grab; touch-action:none;
+  }
+  #car3d:active{cursor:grabbing;}
+  .hero-3d-hint{
+    position:absolute; bottom:6px; left:50%; transform:translateX(-50%);
+    font-size:0.7rem; color:var(--muted); letter-spacing:1.5px;
+    font-family:'Orbitron',sans-serif; text-transform:uppercase;
+    display:flex; align-items:center; gap:8px;
+  }
+  .hero-3d-ring{
+    position:absolute; width:420px; height:420px; border-radius:50%;
+    border:1px dashed rgba(255,0,60,0.25);
+    animation:spin 18s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  section{padding:110px 5vw; position:relative;}
+  .section-head{
+    text-align:center; max-width:700px; margin:0 auto 64px;
+  }
+  .eyebrow{
+    color:var(--red); font-size:0.78rem; letter-spacing:3px;
+    font-family:'Orbitron',sans-serif; display:block; margin-bottom:14px;
+  }
+  .section-head h2{font-size:clamp(2rem,4vw,2.8rem); margin:0 0 16px;}
+  .section-head p{color:var(--muted); line-height:1.7;}
+
+  .reveal{opacity:0; transform:translateY(36px); transition:opacity .8s ease, transform .8s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+  .reveal-stagger > *{opacity:0; transform:translateY(36px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal-stagger.in > *{opacity:1; transform:translateY(0);}
+  .reveal-stagger.in > *:nth-child(1){transition-delay:.05s;}
+  .reveal-stagger.in > *:nth-child(2){transition-delay:.15s;}
+  .reveal-stagger.in > *:nth-child(3){transition-delay:.25s;}
+  .reveal-stagger.in > *:nth-child(4){transition-delay:.35s;}
+
+  /* ---------- Services ---------- */
+  .services-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:22px;
+  }
+  .service-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    padding:30px 26px; position:relative; overflow:hidden;
+    transition:transform .35s, border-color .35s, box-shadow .35s;
+  }
+  .service-card::before{
+    content:''; position:absolute; top:0; left:0; right:0; height:3px;
+    background:linear-gradient(90deg, var(--red), transparent);
+    transform:scaleX(0); transform-origin:left; transition:transform .4s;
+  }
+  .service-card:hover{
+    transform:translateY(-8px);
+    border-color:var(--red-dim);
+    box-shadow:0 16px 40px rgba(0,0,0,0.5);
+  }
+  .service-card:hover::before{transform:scaleX(1);}
+  .service-icon{
+    width:50px; height:50px; border-radius:12px;
+    background:rgba(255,0,60,0.12); color:var(--red);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.4rem; margin-bottom:20px;
+  }
+  .service-card h3{font-size:1.15rem; margin:0 0 10px;}
+  .service-card p{color:var(--muted); font-size:0.92rem; line-height:1.6; margin:0;}
+
+  /* ---------- Gallery ---------- */
+  .gallery-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:220px; gap:14px;
+  }
+  .gallery-grid .g-item:nth-child(1){grid-column:span 2; grid-row:span 2;}
+  .gallery-grid .g-item:nth-child(4){grid-column:span 2;}
+  .g-item{
+    position:relative; border-radius:12px; overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .g-item img{
+    width:100%; height:100%; object-fit:cover; display:block;
+    transition:transform .6s ease, filter .6s ease;
+    filter:grayscale(15%) contrast(1.05);
+  }
+  .g-item:hover img{transform:scale(1.08); filter:grayscale(0%) contrast(1.1);}
+  .g-overlay{
+    position:absolute; inset:0; display:flex; align-items:flex-end; padding:18px;
+    background:linear-gradient(to top, rgba(0,0,0,0.85), transparent 60%);
+  }
+  .g-overlay span{
+    font-family:'Orbitron',sans-serif; font-size:0.85rem; letter-spacing:1px;
+  }
+
+  /* ---------- Pricing ---------- */
+  .pricing-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:26px;
+  }
+  .price-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:16px;
+    padding:38px 30px; position:relative;
+    transition:transform .35s, border-color .35s;
+  }
+  .price-card.featured{
+    border-color:var(--red);
+    background:linear-gradient(160deg, rgba(255,0,60,0.08), var(--panel) 60%);
+  }
+  .price-card.featured::after{
+    content:'MOST POPULAR'; position:absolute; top:-13px; left:50%; transform:translateX(-50%);
+    background:var(--red); color:#fff; font-size:0.65rem; letter-spacing:1.5px;
+    font-family:'Orbitron',sans-serif; padding:6px 16px; border-radius:20px;
+  }
+  .price-card:hover{transform:translateY(-8px);}
+  .price-card h3{font-size:1.3rem; margin:0 0 6px;}
+  .price-card .tagline{color:var(--muted); font-size:0.85rem; margin-bottom:24px; display:block;}
+  .price-amount{
+    font-family:'Orbitron',sans-serif; font-size:2.6rem; color:#fff; margin-bottom:4px;
+  }
+  .price-amount sup{font-size:1rem; color:var(--red); margin-right:4px;}
+  .price-period{color:var(--muted); font-size:0.8rem; margin-bottom:26px; display:block;}
+  .price-card ul{list-style:none; padding:0; margin:0 0 30px; display:flex; flex-direction:column; gap:13px;}
+  .price-card li{
+    font-size:0.9rem; color:var(--chrome); display:flex; gap:10px; align-items:flex-start;
+  }
+  .price-card li::before{content:'\2713'; color:var(--red); font-weight:700;}
+  .price-cta{
+    display:block; text-align:center; width:100%; padding:14px;
+    border-radius:6px; font-family:'Orbitron',sans-serif; font-size:0.8rem;
+    letter-spacing:1px; cursor:pointer; border:1px solid var(--line);
+    background:transparent; color:#fff; transition:.25s;
+  }
+  .price-card.featured .price-cta{background:var(--red); border-color:var(--red);}
+  .price-cta:hover{border-color:var(--red); background:rgba(255,0,60,0.1);}
+
+  /* ---------- Team ---------- */
+  .team-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:24px;}
+  .team-card{text-align:center;}
+  .team-photo{
+    width:100%; aspect-ratio:1; border-radius:14px; overflow:hidden; margin-bottom:16px;
+    border:1px solid var(--line);
+  }
+  .team-photo img{width:100%; height:100%; object-fit:cover; filter:grayscale(40%); transition:filter .4s;}
+  .team-card:hover .team-photo img{filter:grayscale(0%);}
+  .team-card h4{margin:0 0 4px; font-size:1.02rem;}
+  .team-card span{color:var(--red); font-size:0.78rem; letter-spacing:1px;}
+
+  /* ---------- Contact ---------- */
+  .contact-wrap{
+    display:grid; grid-template-columns:0.9fr 1.1fr; gap:50px;
+    background:var(--panel); border:1px solid var(--line); border-radius:20px;
+    padding:50px; overflow:hidden; position:relative;
+  }
+  .contact-info h2{font-size:1.9rem; margin-top:0;}
+  .contact-info p{color:var(--muted); line-height:1.7;}
+  .contact-list{list-style:none; padding:0; margin-top:30px; display:flex; flex-direction:column; gap:20px;}
+  .contact-list li{display:flex; gap:14px; align-items:flex-start; font-size:0.92rem;}
+  .contact-list .ico{
+    width:38px; height:38px; border-radius:10px; background:rgba(255,0,60,0.12);
+    color:var(--red); display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .contact-list b{display:block; margin-bottom:2px;}
+  .contact-list span{color:var(--muted);}
+
+  form#contactForm{display:flex; flex-direction:column; gap:16px;}
+  .form-row{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .field label{
+    font-size:0.72rem; letter-spacing:1.5px; text-transform:uppercase;
+    color:var(--muted); margin-bottom:8px; display:block; font-family:'Orbitron',sans-serif;
+  }
+  .field input, .field textarea, .field select{
+    width:100%; background:var(--bg-soft); border:1px solid var(--line);
+    border-radius:8px; padding:13px 14px; color:#fff; font-family:'Inter',sans-serif;
+    font-size:0.92rem; transition:border-color .25s, box-shadow .25s;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus{
+    border-color:var(--red); outline:none; box-shadow:0 0 0 3px rgba(255,0,60,0.15);
+  }
+  .field textarea{resize:vertical; min-height:110px;}
+  .submit-btn{
+    margin-top:6px; background:var(--red); color:#fff; border:none; padding:16px;
+    border-radius:8px; font-family:'Orbitron',sans-serif; letter-spacing:1.5px; font-size:0.85rem;
+    cursor:pointer; transition:transform .25s, box-shadow .25s; position:relative; overflow:hidden;
+  }
+  .submit-btn:hover{transform:translateY(-2px); box-shadow:0 10px 28px rgba(255,0,60,0.4);}
+  .submit-btn:disabled{opacity:0.6; cursor:not-allowed; transform:none;}
+  .form-msg{
+    font-size:0.85rem; padding:12px 14px; border-radius:8px; display:none;
+  }
+  .form-msg.show{display:block;}
+  .form-msg.ok{background:rgba(0,200,90,0.12); border:1px solid rgba(0,200,90,0.4); color:#5be39a;}
+  .form-msg.err{background:rgba(255,0,60,0.1); border:1px solid rgba(255,0,60,0.4); color:#ff8aa3;}
+
+  /* ---------- Footer ---------- */
+  footer{
+    padding:50px 5vw 30px; border-top:1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;
+  }
+  footer .logo{font-size:1.1rem;}
+  footer .foot-links{display:flex; gap:26px; font-size:0.85rem; color:var(--muted);}
+  footer .foot-links a:hover{color:#fff;}
+  footer .copyright{width:100%; text-align:center; color:var(--muted); font-size:0.78rem; margin-top:20px;}
+
+  /* ---------- Toast for image upload ---------- */
+  .toast{
+    position:fixed; bottom:24px; right:24px; background:var(--panel-2);
+    border:1px solid var(--red); padding:14px 20px; border-radius:10px;
+    font-size:0.85rem; z-index:1100; transform:translateY(20px); opacity:0;
+    transition:transform .3s, opacity .3s; pointer-events:none;
+  }
+  .toast.show{transform:translateY(0); opacity:1;}
+
+  @media(max-width:1024px){
+    .services-grid{grid-template-columns:repeat(2,1fr);}
+    .pricing-grid{grid-template-columns:1fr; max-width:440px; margin:0 auto;}
+    .team-grid{grid-template-columns:repeat(2,1fr);}
+    .gallery-grid{grid-template-columns:repeat(2,1fr);}
+    .gallery-grid .g-item:nth-child(1){grid-column:span 2; grid-row:span 1;}
+    .hero-inner{grid-template-columns:1fr;}
+    .hero-3d-wrap{height:380px; order:-1;}
+    .contact-wrap{grid-template-columns:1fr; padding:34px;}
+  }
+  @media(max-width:680px){
+    .nav-links{display:none;}
+    .burger{display:flex;}
+    .services-grid{grid-template-columns:1fr;}
+    .team-grid{grid-template-columns:1fr 1fr;}
+    .form-row{grid-template-columns:1fr;}
+    .hero-stats{gap:20px; flex-wrap:wrap;}
+    section{padding:80px 6vw;}
+  }
+</style>
+</head>
+<body>
+
+<div class="editbar">
+  <span>🛠️ <strong>Edit Mode</strong> — click any text to type, click any photo to upload a new one. Changes are local to your browser.</span>
+  <button id="saveBtn" type="button">Save Changes</button>
+  <button id="resetBtn" type="button" class="secondary">Reset</button>
+</div>
+
+<nav id="mainNav">
+  <div class="logo" contenteditable="true" data-key="logo">MOD<span>VERSE</span></div>
+  <div class="nav-links">
+    <a href="#services">Services</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#team">Team</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <a href="#contact" class="nav-cta">Book a Build</a>
+  <div class="burger" id="burger"><span></span><span></span><span></span></div>
+</nav>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow">PERFORMANCE &middot; STYLE &middot; PRECISION</div>
+      <h1 contenteditable="true" data-key="hero-title">BUILD THE CAR<br><em>THEY CAN'T IGNORE</em></h1>
+      <p class="lead" contenteditable="true" data-key="hero-lead">From subtle stance kits to full widebody builds — MODVERSE turns daily drivers into showstoppers. Custom wraps, ECU tuning, body kits, and interior work, all under one roof.</p>
+      <div class="hero-ctas">
+        <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">⚡ Start Your Build</button>
+        <button class="btn-ghost" onclick="document.getElementById('gallery').scrollIntoView({behavior:'smooth'})">View Gallery</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><b contenteditable="true" data-key="stat1">1,200+</b><span>Cars Modified</span></div>
+        <div class="stat"><b contenteditable="true" data-key="stat2">14</b><span>Years Running</span></div>
+        <div class="stat"><b contenteditable="true" data-key="stat3">4.9★</b><span>Client Rating</span></div>
+      </div>
+    </div>
+    <div class="hero-3d-wrap">
+      <div class="hero-3d-ring"></div>
+      <canvas id="car3d"></canvas>
+      <div class="hero-3d-hint">🖱️ Drag to rotate the build</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SERVICES ================= -->
+<section id="services">
+  <div class="section-head reveal">
+    <span class="eyebrow">WHAT WE DO</span>
+    <h2 contenteditable="true" data-key="services-title">Full-Spectrum Modification</h2>
+    <p contenteditable="true" data-key="services-sub">Every build starts with a conversation about how you actually want to drive. Then we make it real.</p>
+  </div>
+  <div class="services-grid reveal-stagger">
+    <div class="service-card">
+      <div class="service-icon">🎨</div>
+      <h3 contenteditable="true" data-key="svc1-title">Custom Wraps & Paint</h3>
+      <p contenteditable="true" data-key="svc1-desc">Vinyl wraps, color-shift paint, and matte finishes applied by certified installers with zero-bubble guarantees.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">⚙️</div>
+      <h3 contenteditable="true" data-key="svc2-title">ECU & Performance Tuning</h3>
+      <p contenteditable="true" data-key="svc2-desc">Dyno-tested remaps, turbo upgrades, and exhaust systems that add real power, not just real noise.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🛞</div>
+      <h3 contenteditable="true" data-key="svc3-title">Suspension & Wheels</h3>
+      <p contenteditable="true" data-key="svc3-desc">Coilovers, air ride, forged wheels — dialed-in stance and handling for street or track.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🪑</div>
+      <h3 contenteditable="true" data-key="svc4-title">Interior & Audio</h3>
+      <p contenteditable="true" data-key="svc4-desc">Custom upholstery, ambient lighting, and sound systems built around how you actually use the cabin.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GALLERY ================= -->
+<section id="gallery">
+  <div class="section-head reveal">
+    <span class="eyebrow">RECENT BUILDS</span>
+    <h2 contenteditable="true" data-key="gallery-title">From the Shop Floor</h2>
+    <p contenteditable="true" data-key="gallery-sub">Click any photo to swap in your own. Hover to see the build name.</p>
+  </div>
+  <div class="gallery-grid reveal-stagger">
+    <div class="g-item photo-swap">
+      <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200&auto=format&fit=crop" data-key="g1" alt="Widebody build">
+      <input type="file" accept="image/*" data-target="g1">
+      <span class="swap-label">Click to change photo</span>
+      <div class="g-overlay"><span contenteditable="true" data-key="g1-name">Widebody GT — Satin Black</span></div>
+    </div>
+    <div class="g-item photo-swap">
+      <img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=900&auto=format&fit=crop" data-key="g2" alt="Engine bay">
+      <input type="file" accept="image/*" data-target="g2">
+      <span class="swap-label">Click to change photo</span>
+      <div class="g-overlay"><span contenteditable="true" data-key="g2-name">Stage 3 Engine Build</span></div>
+    </div>
+    <div class="g-item photo-swap">
+      <img src="https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?q=80&w=900&auto=format&fit=crop" data-key="g3" alt="Custom wheels">
+      <input type="file" accept="image/*" data-target="g3">
+      <span class="swap-label">Click to change photo</span>
+      <div class="g-overlay"><span contenteditable="true" data-key="g3-name">Forged Wheel Set</span></div>
+    </div>
+    <div class="g-item photo-swap">
+      <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=1200&auto=format&fit=crop" data-key="g4" alt="Interior build">
+      <input type="file" accept="image/*" data-target="g4">
+      <span class="swap-label">Click to change photo</span>
+      <div class="g-overlay"><span contenteditable="true" data-key="g4-name">Full Interior Retrim</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PRICING ================= -->
+<section id="pricing">
+  <div class="section-head reveal">
+    <span class="eyebrow">PACKAGES</span>
+    <h2 contenteditable="true" data-key="pricing-title">Pick Your Build Tier</h2>
+    <p contenteditable="true" data-key="pricing-sub">Every price and feature here is editable — click to make it yours.</p>
+  </div>
+  <div class="pricing-grid reveal-stagger">
+    <div class="price-card">
+      <h3 contenteditable="true" data-key="p1-name">Street Stage</h3>
+      <span class="tagline" contenteditable="true" data-key="p1-tag">Light cosmetic & handling upgrades</span>
+      <div class="price-amount"><sup>$</sup><span contenteditable="true" data-key="p1-price">899</span></div>
+      <span class="price-period" contenteditable="true" data-key="p1-period">starting price, per build</span>
+      <ul>
+        <li contenteditable="true" data-key="p1-f1">Vinyl accent wrap</li>
+        <li contenteditable="true" data-key="p1-f2">Lowering springs</li>
+        <li contenteditable="true" data-key="p1-f3">Cat-back exhaust</li>
+        <li contenteditable="true" data-key="p1-f4">Window tint</li>
+      </ul>
+      <button class="price-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Choose Street</button>
+    </div>
+    <div class="price-card featured">
+      <h3 contenteditable="true" data-key="p2-name">Track Stage</h3>
+      <span class="tagline" contenteditable="true" data-key="p2-tag">Our most popular full build</span>
+      <div class="price-amount"><sup>$</sup><span contenteditable="true" data-key="p2-price">2,499</span></div>
+      <span class="price-period" contenteditable="true" data-key="p2-period">starting price, per build</span>
+      <ul>
+        <li contenteditable="true" data-key="p2-f1">Full vinyl wrap, any color</li>
+        <li contenteditable="true" data-key="p2-f2">Coilover suspension</li>
+        <li contenteditable="true" data-key="p2-f3">ECU remap + turbo upgrade</li>
+        <li contenteditable="true" data-key="p2-f4">Forged 19" wheel set</li>
+        <li contenteditable="true" data-key="p2-f5">Dyno tuning session</li>
+      </ul>
+      <button class="price-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Choose Track</button>
+    </div>
+    <div class="price-card">
+      <h3 contenteditable="true" data-key="p3-name">Showcase Stage</h3>
+      <span class="tagline" contenteditable="true" data-key="p3-tag">Total transformation, no limits</span>
+      <div class="price-amount"><sup>$</sup><span contenteditable="true" data-key="p3-price">6,999</span></div>
+      <span class="price-period" contenteditable="true" data-key="p3-period">starting price, per build</span>
+      <ul>
+        <li contenteditable="true" data-key="p3-f1">Widebody kit installation</li>
+        <li contenteditable="true" data-key="p3-f2">Custom paint or color-shift wrap</li>
+        <li contenteditable="true" data-key="p3-f3">Air ride suspension</li>
+        <li contenteditable="true" data-key="p3-f4">Full interior retrim</li>
+        <li contenteditable="true" data-key="p3-f5">Show-spec detailing</li>
+      </ul>
+      <button class="price-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Choose Showcase</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TEAM ================= -->
+<section id="team">
+  <div class="section-head reveal">
+    <span class="eyebrow">THE CREW</span>
+    <h2 contenteditable="true" data-key="team-title">Meet the Builders</h2>
+    <p contenteditable="true" data-key="team-sub">Names, roles, and photos are all yours to edit.</p>
+  </div>
+  <div class="team-grid reveal-stagger">
+    <div class="team-card">
+      <div class="team-photo photo-swap">
+        <img src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?q=80&w=500&auto=format&fit=crop" data-key="t1" alt="Team member">
+        <input type="file" accept="image/*" data-target="t1">
+        <span class="swap-label">Change</span>
+      </div>
+      <h4 contenteditable="true" data-key="t1-name">Marcus Reyes</h4>
+      <span contenteditable="true" data-key="t1-role">Founder & Master Tuner</span>
+    </div>
+    <div class="team-card">
+      <div class="team-photo photo-swap">
+        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=500&auto=format&fit=crop" data-key="t2" alt="Team member">
+        <input type="file" accept="image/*" data-target="t2">
+        <span class="swap-label">Change</span>
+      </div>
+      <h4 contenteditable="true" data-key="t2-name">Lena Cho</h4>
+      <span contenteditable="true" data-key="t2-role">Lead Wrap Specialist</span>
+    </div>
+    <div class="team-card">
+      <div class="team-photo photo-swap">
+        <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=500&auto=format&fit=crop" data-key="t3" alt="Team member">
+        <input type="file" accept="image/*" data-target="t3">
+        <span class="swap-label">Change</span>
+      </div>
+      <h4 contenteditable="true" data-key="t3-name">Diego Fontaine</h4>
+      <span contenteditable="true" data-key="t3-role">Fabrication Lead</span>
+    </div>
+    <div class="team-card">
+      <div class="team-photo photo-swap">
+        <img src="https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?q=80&w=500&auto=format&fit=crop" data-key="t4" alt="Team member">
+        <input type="file" accept="image/*" data-target="t4">
+        <span class="swap-label">Change</span>
+      </div>
+      <h4 contenteditable="true" data-key="t4-name">Priya Nair</h4>
+      <span contenteditable="true" data-key="t4-role">Interior & Audio Lead</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section id="contact">
+  <div class="contact-wrap reveal">
+    <div class="contact-info">
+      <span class="eyebrow">GET IN TOUCH</span>
+      <h2 contenteditable="true" data-key="contact-title">Let's Build Something</h2>
+      <p contenteditable="true" data-key="contact-sub">Tell us about your car and what you're picturing. We'll reply within one business day with a build plan and quote.</p>
+      <ul class="contact-list">
+        <li>
+          <div class="ico">📍</div>
+          <div><b contenteditable="true" data-key="addr-label">Shop Address</b><span contenteditable="true" data-key="addr-value">2140 Industrial Pkwy, Austin, TX</span></div>
+        </li>
+        <li>
+          <div class="ico">📞</div>
+          <div><b contenteditable="true" data-key="phone-label">Call Us</b><span contenteditable="true" data-key="phone-value">(512) 555-0173</span></div>
+        </li>
+        <li>
+          <div class="ico">✉️</div>
+          <div><b contenteditable="true" data-key="email-label">Email</b><span contenteditable="true" data-key="email-value">builds@modverse.shop</span></div>
+        </li>
+        <li>
+          <div class="ico">🕒</div>
+          <div><b contenteditable="true" data-key="hours-label">Hours</b><span contenteditable="true" data-key="hours-value">Mon–Sat, 9am–7pm</span></div>
+        </li>
+      </ul>
+    </div>
+    <form id="contactForm">
+      <div class="form-row">
+        <div class="field">
+          <label for="cf-name">Your Name</label>
+          <input id="cf-name" name="name" type="text" required placeholder="Jordan Smith">
+        </div>
+        <div class="field">
+          <label for="cf-phone">Phone</label>
+          <input id="cf-phone" name="phone" type="tel" placeholder="(555) 555-5555">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label for="cf-email">Email</label>
+          <input id="cf-email" name="email" type="email" required placeholder="you@email.com">
+        </div>
+        <div class="field">
+          <label for="cf-package">Interested In</label>
+          <select id="cf-package" name="package">
+            <option>Street Stage</option>
+            <option>Track Stage</option>
+            <option>Showcase Stage</option>
+            <option>Not sure yet</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="cf-message">Tell us about your car & vision</label>
+        <textarea id="cf-message" name="message" required placeholder="Year/make/model, and what you're picturing..."></textarea>
+      </div>
+      <div class="form-msg" id="formMsg"></div>
+      <button type="submit" class="submit-btn" id="submitBtn">Send Message →</button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="logo">MOD<span style="color:var(--red)">VERSE</span></div>
+  <div class="foot-links">
+    <a href="#services">Services</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="copyright" contenteditable="true" data-key="copyright">&copy; 2026 MODVERSE Auto Customs. All rights reserved.</div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.min.js"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from "three";
+
+/* ============ 3D HERO CAR (procedural low-poly sports car) ============ */
+const canvas = document.getElementById('car3d');
+let scene, camera, renderer, carGroup, wheels = [];
+let dragging = false, lastX = 0, lastY = 0, rotY = 0.5, rotX = -0.15, autoSpin = true;
+
+function initThree(){
+  const wrap = canvas.parentElement;
+  const w = wrap.clientWidth, h = wrap.clientHeight;
+
+  scene = new THREE.Scene();
+  scene.background = null;
+
+  camera = new THREE.PerspectiveCamera(38, w/h, 0.1, 100);
+  camera.position.set(0, 1.6, 7.5);
+
+  renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(w, h);
+  renderer.shadowMap.enabled = true;
+
+  // Lights
+  const ambient = new THREE.AmbientLight(0x404050, 1.2);
+  scene.add(ambient);
+
+  const key = new THREE.DirectionalLight(0xffffff, 2.2);
+  key.position.set(5, 8, 5);
+  key.castShadow = true;
+  scene.add(key);
+
+  const rim = new THREE.PointLight(0xff003c, 6, 20);
+  rim.position.set(-4, 2, -3);
+  scene.add(rim);
+
+  const fill = new THREE.PointLight(0x3a8cff, 2.5, 20);
+  fill.position.set(4, 1, -4);
+  scene.add(fill);
+
+  // Ground / reflection disc
+  const groundGeo = new THREE.CircleGeometry(6, 64);
+  const groundMat = new THREE.MeshStandardMaterial({ color:0x0a0a0a, metalness:0.6, roughness:0.35 });
+  const ground = new THREE.Mesh(groundGeo, groundMat);
+  ground.rotation.x = -Math.PI/2;
+  ground.position.y = -0.85;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  const ringGeo = new THREE.RingGeometry(2.0, 2.05, 64);
+  const ringMat = new THREE.MeshBasicMaterial({ color:0xff003c, side:THREE.DoubleSide, transparent:true, opacity:0.6 });
+  const ring = new THREE.Mesh(ringGeo, ringMat);
+  ring.rotation.x = -Math.PI/2;
+  ring.position.y = -0.84;
+  scene.add(ring);
+
+  carGroup = buildCar();
+  scene.add(carGroup);
+
+  animate();
+}
+
+function buildCar(){
+  const group = new THREE.Group();
+
+  const bodyMat = new THREE.MeshStandardMaterial({ color:0xb8090c, metalness:0.7, roughness:0.25 });
+  const darkMat = new THREE.MeshStandardMaterial({ color:0x111111, metalness:0.4, roughness:0.5 });
+  const glassMat = new THREE.MeshStandardMaterial({ color:0x111922, metalness:0.9, roughness:0.05, transparent:true, opacity:0.85 });
+  const chromeMat = new THREE.MeshStandardMaterial({ color:0xdedede, metalness:0.95, roughness:0.15 });
+  const lightMat = new THREE.MeshStandardMaterial({ color:0xffffff, emissive:0xffffff, emissiveIntensity:1.4 });
+  const tailMat = new THREE.MeshStandardMaterial({ color:0xff003c, emissive:0xff003c, emissiveIntensity:1.2 });
+
+  // Lower chassis
+  const chassis = new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.45, 1.9), darkMat);
+  chassis.position.y = -0.35;
+  chassis.castShadow = true;
+  group.add(chassis);
+
+  // Main body (tapered using scaled box + bevel feel via multiple boxes)
+  const bodyMain = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.55, 1.85), bodyMat);
+  bodyMain.position.set(0.1, 0.05, 0);
+  bodyMain.castShadow = true;
+  group.add(bodyMain);
+
+  // Cabin (cockpit) tapered
+  const cabinGeo = new THREE.BoxGeometry(1.9, 0.55, 1.55);
+  const cabin = new THREE.Mesh(cabinGeo, bodyMat);
+  cabin.position.set(-0.15, 0.55, 0);
+  cabin.scale.set(1, 1, 0.95);
+  cabin.castShadow = true;
+  group.add(cabin);
+
+  // Windshield + windows (angled via rotation)
+  const windshield = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.55, 1.45), glassMat);
+  windshield.position.set(0.62, 0.58, 0);
+  windshield.rotation.z = -0.55;
+  group.add(windshield);
+
+  const rearWindow = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.5, 1.4), glassMat);
+  rearWindow.position.set(-0.95, 0.55, 0);
+  rearWindow.rotation.z = 0.6;
+  group.add(rearWindow);
+
+  const sideGlassL = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.32, 0.05), glassMat);
+  sideGlassL.position.set(-0.1, 0.62, 0.79);
+  group.add(sideGlassL);
+  const sideGlassR = sideGlassL.clone();
+  sideGlassR.position.z = -0.79;
+  group.add(sideGlassR);
+
+  // Front nose taper
+  const nose = new THREE.Mesh(new THREE.ConeGeometry(0.95, 0.9, 4), bodyMat);
+  nose.rotation.z = Math.PI/2;
+  nose.rotation.y = Math.PI/4;
+  nose.scale.set(1, 1.05, 0.85);
+  nose.position.set(2.05, 0.02, 0);
+  nose.castShadow = true;
+  group.add(nose);
+
+  // Rear taper
+  const rear = nose.clone();
+  rear.position.set(-2.05, 0.02, 0);
+  rear.rotation.y = -Math.PI/4 + Math.PI;
+  group.add(rear);
+
+  // Spoiler
+  const spoilerStandL = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.32, 0.08), darkMat);
+  spoilerStandL.position.set(-1.85, 0.55, 0.55);
+  group.add(spoilerStandL);
+  const spoilerStandR = spoilerStandL.clone();
+  spoilerStandR.position.z = -0.55;
+  group.add(spoilerStandR);
+  const spoilerWing = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.05, 1.7), darkMat);
+  spoilerWing.position.set(-1.9, 0.75, 0);
+  group.add(spoilerWing);
+
+  // Headlights
+  const headlightL = new THREE.Mesh(new THREE.SphereGeometry(0.13, 16, 16), lightMat);
+  headlightL.position.set(2.35, 0.12, 0.55);
+  group.add(headlightL);
+  const headlightR = headlightL.clone();
+  headlightR.position.z = -0.55;
+  group.add(headlightR);
+
+  // Taillights
+  const tailL = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.18, 0.5), tailMat);
+  tailL.position.set(-2.28, 0.12, 0.5);
+  group.add(tailL);
+  const tailR = tailL.clone();
+  tailR.position.z = -0.5;
+  group.add(tailR);
+
+  // Side mirrors
+  const mirrorL = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.1, 0.18), darkMat);
+  mirrorL.position.set(0.75, 0.65, 0.95);
+  group.add(mirrorL);
+  const mirrorR = mirrorL.clone();
+  mirrorR.position.z = -0.95;
+  group.add(mirrorR);
+
+  // Wheels
+  const wheelGeo = new THREE.CylinderGeometry(0.55, 0.55, 0.4, 24);
+  const tireMat = new THREE.MeshStandardMaterial({ color:0x0a0a0a, metalness:0.2, roughness:0.8 });
+  const rimGeo = new THREE.CylinderGeometry(0.32, 0.32, 0.42, 16);
+
+  const wheelPositions = [
+    [1.55, -0.55, 1.0], [1.55, -0.55, -1.0],
+    [-1.55, -0.55, 1.0], [-1.55, -0.55, -1.0]
+  ];
+  wheelPositions.forEach(pos => {
+    const wheelGroup = new THREE.Group();
+    const tire = new THREE.Mesh(wheelGeo, tireMat);
+    tire.rotation.x = Math.PI/2;
+    tire.castShadow = true;
+    wheelGroup.add(tire);
+    const rim = new THREE.Mesh(rimGeo, chromeMat);
+    rim.rotation.x = Math.PI/2;
+    wheelGroup.add(rim);
+    wheelGroup.position.set(...pos);
+    group.add(wheelGroup);
+    wheels.push(wheelGroup);
+  });
+
+  group.scale.set(0.78, 0.78, 0.78);
+  group.rotation.y = rotY;
+  group.rotation.x = rotX;
+  return group;
+}
+
+function animate(){
+  requestAnimationFrame(animate);
+  if(autoSpin && !dragging){
+    rotY += 0.0035;
+  }
+  carGroup.rotation.y = rotY;
+  carGroup.rotation.x = rotX;
+  carGroup.position.y = Math.sin(Date.now()*0.001)*0.05;
+  wheels.forEach(w => { w.rotation.z += dragging ? 0 : 0.01; });
+  renderer.render(scene, camera);
+}
+
+function onResize(){
+  const wrap = canvas.parentElement;
+  const w = wrap.clientWidth, h = wrap.clientHeight;
+  camera.aspect = w/h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+}
+window.addEventListener('resize', onResize);
+
+// Drag controls
+function startDrag(x, y){ dragging = true; lastX = x; lastY = y; autoSpin = false; }
+function moveDrag(x, y){
+  if(!dragging) return;
+  const dx = x - lastX, dy = y - lastY;
+  rotY += dx * 0.008;
+  rotX += dy * 0.006;
+  rotX = Math.max(-0.6, Math.min(0.6, rotX));
+  lastX = x; lastY = y;
+}
+function endDrag(){ dragging = false; setTimeout(()=>{ autoSpin = true; }, 2500); }
+
+canvas.addEventListener('mousedown', e => startDrag(e.clientX, e.clientY));
+window.addEventListener('mousemove', e => moveDrag(e.clientX, e.clientY));
+window.addEventListener('mouseup', endDrag);
+canvas.addEventListener('touchstart', e => { const t=e.touches[0]; startDrag(t.clientX, t.clientY); }, {passive:true});
+canvas.addEventListener('touchmove', e => { const t=e.touches[0]; moveDrag(t.clientX, t.clientY); }, {passive:true});
+canvas.addEventListener('touchend', endDrag);
+
+// Lazy init once visible / loaded
+window.addEventListener('load', initThree);
+</script>
+
+<script>
+/* ============ NAV scroll state + mobile menu ============ */
+const nav = document.getElementById('mainNav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 30);
+});
+const burger = document.getElementById('burger');
+const navLinks = document.querySelector('.nav-links');
+burger.addEventListener('click', () => {
+  const open = navLinks.style.display === 'flex';
+  navLinks.style.display = open ? 'none' : 'flex';
+  navLinks.style.flexDirection = 'column';
+  navLinks.style.position = 'fixed';
+  navLinks.style.top = '70px';
+  navLinks.style.right = '5vw';
+  navLinks.style.background = '#0d0d0d';
+  navLinks.style.padding = '20px 26px';
+  navLinks.style.borderRadius = '12px';
+  navLinks.style.border = '1px solid #262626';
+});
+navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  if(window.innerWidth <= 680) navLinks.style.display = 'none';
+}));
+
+/* ============ Scroll reveal ============ */
+const revealEls = document.querySelectorAll('.reveal, .reveal-stagger');
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      entry.target.classList.add('in');
+      io.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+revealEls.forEach(el => io.observe(el));
+
+/* ============ Toast helper ============ */
+const toast = document.getElementById('toast');
+function showToast(msg){
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=> toast.classList.remove('show'), 2400);
+}
+
+/* ============ Photo swap (click to upload new image) ============ */
+document.querySelectorAll('.photo-swap input[type=file]').forEach(input => {
+  input.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const targetKey = input.dataset.target;
+      const img = input.parentElement.querySelector('img');
+      img.src = ev.target.result;
+      localStorage.setItem('modverse_img_' + targetKey, ev.target.result);
+      showToast('Photo updated ✓');
+    };
+    reader.readAsDataURL(file);
+  });
+});
+
+/* ============ Persist editable text + images via localStorage ============ */
+const STORAGE_KEY = 'modverse_site_data';
+
+function collectData(){
+  const data = {};
+  document.querySelectorAll('[contenteditable="true"][data-key]').forEach(el => {
+    data[el.dataset.key] = el.innerHTML;
+  });
+  document.querySelectorAll('img[data-key]').forEach(img => {
+    const saved = localStorage.getItem('modverse_img_' + img.dataset.key);
+    if(saved) data['img_' + img.dataset.key] = saved;
+  });
+  return data;
+}
+
+function applyData(data){
+  if(!data) return;
+  Object.keys(data).forEach(key => {
+    if(key.startsWith('img_')){
+      const imgKey = key.replace('img_', '');
+      const img = document.querySelector(`img[data-key="${imgKey}"]`);
+      if(img) img.src = data[key];
+    } else {
+      const el = document.querySelector(`[data-key="${key}"]`);
+      if(el && el.hasAttribute('contenteditable')) el.innerHTML = data[key];
+    }
+  });
+}
+
+// Load saved data on page load
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+    applyData(saved);
+  } catch(e){ console.warn('Could not load saved data', e); }
+
+  // Also reapply any individually-saved images (from photo swap) on load
+  document.querySelectorAll('img[data-key]').forEach(img => {
+    const saved = localStorage.getItem('modverse_img_' + img.dataset.key);
+    if(saved) img.src = saved;
+  });
+});
+
+document.getElementById('saveBtn').addEventListener('click', () => {
+  const data = collectData();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  showToast('All changes saved ✓');
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if(confirm('Reset all text and photos back to the original demo content?')){
+    localStorage.removeItem(STORAGE_KEY);
+    Object.keys(localStorage).filter(k => k.startsWith('modverse_img_')).forEach(k => localStorage.removeItem(k));
+    location.reload();
+  }
+});
+
+/* ============ Contact form ============ */
+const form = document.getElementById('contactForm');
+const formMsg = document.getElementById('formMsg');
+const submitBtn = document.getElementById('submitBtn');
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const name = document.getElementById('cf-name').value.trim();
+  const email = document.getElementById('cf-email').value.trim();
+  const phone = document.getElementById('cf-phone').value.trim();
+  const pkg = document.getElementById('cf-package').value;
+  const message = document.getElementById('cf-message').value.trim();
+
+  if(!name || !email || !message){
+    formMsg.textContent = 'Please fill in your name, email, and a short message.';
+    formMsg.className = 'form-msg show err';
+    return;
+  }
+
+  // Store the lead locally so the shop owner can see submissions even without a backend
+  const leads = JSON.parse(localStorage.getItem('modverse_leads') || '[]');
+  leads.push({ name, email, phone, package: pkg, message, date: new Date().toISOString() });
+  localStorage.setItem('modverse_leads', JSON.stringify(leads));
+
+  // Build a mailto link so it actually reaches the shop's inbox
+  const shopEmail = document.querySelector('[data-key="email-value"]').textContent.trim();
+  const subject = encodeURIComponent(`New build inquiry from ${name} (${pkg})`);
+  const body = encodeURIComponent(
+    `Name: ${name}\nEmail: ${email}\nPhone: ${phone || 'n/a'}\nPackage: ${pkg}\n\nMessage:\n${message}`
+  );
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Opening your email app...';
+
+  formMsg.textContent = `Thanks ${name}! Your email app should open now with the message pre-filled — just hit send. We'll reply within one business day.`;
+  formMsg.className = 'form-msg show ok';
+
+  setTimeout(() => {
+    window.location.href = `mailto:${shopEmail}?subject=${subject}&body=${body}`;
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Send Message →';
+    form.reset();
+  }, 600);
+});
+</script>
+
+</body>
+</html>
